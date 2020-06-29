@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+cd $(dirname $0)/..
+set -Eeuo pipefail
+
+docker build -t auth-provider -f docker/Dockerfile .
