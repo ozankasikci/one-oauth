@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/dghubble/sessions"
 	"io/ioutil"
 	"log"
@@ -41,10 +40,7 @@ func New() *http.ServeMux {
 	mux.HandleFunc("/auth/google/login", func(w http.ResponseWriter, r *http.Request) { proxy.ServeHTTP(w, r) })
 	mux.HandleFunc("/auth/google/callback", func(w http.ResponseWriter, r *http.Request) { proxy.ServeHTTP(w, r) })
 	mux.HandleFunc("/auth/google/success/callback", func(w http.ResponseWriter, r *http.Request) {
-		println("wtf man")
-
 		println(r.URL.Query()["email"][0])
-		spew.Dump(r.URL.Query())
 
 		http.Redirect(w, r, "/profile", http.StatusFound)
 	})

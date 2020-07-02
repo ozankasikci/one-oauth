@@ -17,14 +17,14 @@ type GoogleProviderInterface interface {
 }
 
 type Config struct {
-	CookieSessionName              string
-	CookieSessionSecret            string
-	CookieSessionUserKey           string
-	ClientID                       string
-	ClientSecret                   string
-	RedirectURL                    string
-	AuthProviderSuccessCallbackURL string
-	Scopes                         []string
+	CookieSessionName    string
+	CookieSessionSecret  string
+	CookieSessionUserKey string
+	ClientID             string
+	ClientSecret         string
+	GoogleRedirectURL    string
+	SuccessRedirectURL   string
+	Scopes               []string
 }
 
 type GoogleProvider struct {
@@ -50,7 +50,7 @@ func New(config *Config) GoogleProviderInterface {
 	oauth2Config := &oauth2.Config{
 		ClientID:     config.ClientID,
 		ClientSecret: config.ClientSecret,
-		RedirectURL:  config.RedirectURL,
+		RedirectURL:  config.GoogleRedirectURL,
 		Endpoint:     googleOAuth2.Endpoint,
 		Scopes:       config.Scopes,
 	}
@@ -86,7 +86,7 @@ func (t *GoogleProvider) issueSession() http.Handler {
 			return
 		}
 
-		url, err := url.Parse(t.Config.AuthProviderSuccessCallbackURL)
+		successRedirectUrl, err := url.Parse(t.Config.SuccessRedirectURL)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -97,7 +97,7 @@ func (t *GoogleProvider) issueSession() http.Handler {
 			verifiedEmailString = "true"
 		}
 
-		q := url.Query()
+		q := successRedirectUrl.Query()
 		q.Set("email", googleUser.Email)
 		q.Set("name", googleUser.Name)
 		q.Set("family_name", googleUser.FamilyName)
@@ -109,9 +109,9 @@ func (t *GoogleProvider) issueSession() http.Handler {
 		q.Set("locale", googleUser.Locale)
 		q.Set("picture", googleUser.Picture)
 		q.Set("verified_email", verifiedEmailString)
-		url.RawQuery = q.Encode()
+		successRedirectUrl.RawQuery = q.Encode()
 
-		http.Redirect(w, r, url.String(), http.StatusFound)
+		http.Redirect(w, r, successRedirectUrl.String(), http.StatusFound)
 	}
 
 	return http.HandlerFunc(fn)

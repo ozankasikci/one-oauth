@@ -9,14 +9,14 @@ func main() {
 	providerConfig := provider.NewConfig(
 		"4999",
 		provider.AddGoogleConfig(&googleprovider.Config{
-			ClientID:                       "",
-			ClientSecret:                   "",
-			RedirectURL:                    "http://localhost:5000/auth/google/callback",
-			AuthProviderSuccessCallbackURL: "http://localhost:5000/auth/google/success/callback",
-			Scopes:                         []string{"profile", "email"},
-			CookieSessionName:              "example-google-app",
-			CookieSessionSecret:           "example cookie signing secret",
-			CookieSessionUserKey:           "googleID",
+			ClientID:             "",
+			ClientSecret:         "",
+			GoogleRedirectURL:    "http://localhost:5000/auth/google/callback",
+			SuccessRedirectURL:   "http://localhost:5000/auth/google/success/callback",
+			Scopes:               []string{"profile", "email"},
+			CookieSessionName:    "example-google-app",
+			CookieSessionSecret:  "example cookie signing secret",
+			CookieSessionUserKey: "googleID",
 		}),
 	)
 
