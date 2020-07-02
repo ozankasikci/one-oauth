@@ -1,12 +1,25 @@
 package main
 
 import (
-	"github.com/ozankasikci/auth-provider-container/internal"
-	"os"
+	"github.com/ozankasikci/auth-provider-container/internal/provider"
+	"github.com/ozankasikci/auth-provider-container/internal/provider/google"
 )
 
 func main() {
-	os.Setenv("GOOGLE_CLIENT_ID", "865902519436-kia9b4p6a9vejck7ep656hheo4pdjlpd.apps.googleusercontent.com")
-	os.Setenv("GOOGLE_CLIENT_SECRET", "Pv2uMlLwGAMgpnwEPN_tYWQs")
-	internal.Start()
+	providerConfig := provider.NewConfig(
+		"4999",
+		provider.AddGoogleConfig(&googleprovider.Config{
+			ClientID:                       "",
+			ClientSecret:                   "",
+			RedirectURL:                    "http://localhost:5000/auth/google/callback",
+			AuthProviderSuccessCallbackURL: "http://localhost:5000/auth/google/success/callback",
+			Scopes:                         []string{"profile", "email"},
+			CookieSessionName:              "example-google-app",
+			CookieSessionSecret:           "example cookie signing secret",
+			CookieSessionUserKey:           "googleID",
+		}),
+	)
+
+	authProvider := provider.New(providerConfig)
+	authProvider.Start()
 }
