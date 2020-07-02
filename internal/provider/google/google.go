@@ -14,17 +14,18 @@ type GoogleProviderInterface interface {
 	LoginHandler() http.Handler
 	LogoutHandler() http.Handler
 	CallbackHandler() http.Handler
+	IsAuthenticatedHandler() http.Handler
 }
 
 type Config struct {
-	CookieSessionName    string
-	CookieSessionSecret  string
-	CookieSessionUserKey string
-	ClientID             string
-	ClientSecret         string
-	GoogleRedirectURL    string
-	SuccessRedirectURL   string
-	Scopes               []string
+	CookieSessionName          string
+	CookieSessionSecret        string
+	CookieSessionUserKey       string
+	ClientID                   string
+	ClientSecret               string
+	GoogleRedirectURL          string
+	OneOauthSuccessRedirectURL string
+	Scopes                     []string
 }
 
 type GoogleProvider struct {
@@ -44,6 +45,10 @@ func (t GoogleProvider) LogoutHandler() http.Handler {
 
 func (t GoogleProvider) CallbackHandler() http.Handler {
 	return google.StateHandler(t.StateConfig, google.CallbackHandler(t.Oauth2Config, t.issueSession(), nil))
+}
+
+func (t GoogleProvider) IsAuthenticatedHandler() http.Handler {
+	return t.IsAuthenticatedHandler()
 }
 
 func New(config *Config) GoogleProviderInterface {
@@ -86,7 +91,7 @@ func (t *GoogleProvider) issueSession() http.Handler {
 			return
 		}
 
-		successRedirectUrl, err := url.Parse(t.Config.SuccessRedirectURL)
+		successRedirectUrl, err := url.Parse(t.Config.OneOauthSuccessRedirectURL)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

@@ -3,6 +3,8 @@ version: "3"
 services:
 
   provider:
-    image: auth-provider
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     ports:
     - 4999:4999
