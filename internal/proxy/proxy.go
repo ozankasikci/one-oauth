@@ -1,19 +1,20 @@
-package provider
+package proxy
 
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	googleprovider "github.com/ozankasikci/auth-provider-container/internal/provider/google"
+	googleprovider "github.com/ozankasikci/one-oauth/internal/proxy/google"
 	"log"
 	"net/http"
 )
 
 type Config struct {
-	Port         string
-	GoogleConfig *googleprovider.Config
+	UpstreamSuccessRedirectURL string
+	Port                       string
+	GoogleConfig               *googleprovider.Config
 }
 
-type Provider struct {
+type Proxy struct {
 	Config         *Config
 	Router         *mux.Router
 	GoogleProvider googleprovider.GoogleProviderInterface
@@ -37,9 +38,9 @@ func AddGoogleConfig(config *googleprovider.Config) func(*Config) {
 	}
 }
 
-func New(config *Config) *Provider {
+func New(config *Config) *Proxy {
 	router := mux.NewRouter()
-	provider := &Provider{
+	proxy := &Proxy{
 		Config: config,
 		Router: router,
 	}
@@ -49,13 +50,13 @@ func New(config *Config) *Provider {
 		router.Handle("/auth/google/login", googleProvider.LoginHandler())
 		router.Handle("/auth/google/logout", googleProvider.LogoutHandler())
 		router.Handle("/auth/google/callback", googleProvider.CallbackHandler())
-		provider.GoogleProvider = googleProvider
+		proxy.GoogleProvider = googleProvider
 	}
 
-	return provider
+	return proxy
 }
 
-func (t *Provider) Start() {
+func (t *Proxy) Start() {
 	address := fmt.Sprintf(":%s", t.Config.Port)
 
 	log.Printf("Starting Server listening on %s\n", address)

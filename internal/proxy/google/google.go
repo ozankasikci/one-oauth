@@ -24,7 +24,7 @@ type Config struct {
 	ClientID                   string
 	ClientSecret               string
 	GoogleRedirectURL          string
-	OneOauthSuccessRedirectURL string
+	UpstreamSuccessRedirectURL string
 	Scopes                     []string
 }
 
@@ -91,7 +91,7 @@ func (t *GoogleProvider) issueSession() http.Handler {
 			return
 		}
 
-		successRedirectUrl, err := url.Parse(t.Config.OneOauthSuccessRedirectURL)
+		successRedirectUrl, err := url.Parse(t.Config.UpstreamSuccessRedirectURL)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

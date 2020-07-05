@@ -1,4 +1,4 @@
-module github.com/ozankasikci/auth-provider-container
+module github.com/ozankasikci/one-oauth
 
 go 1.14
 

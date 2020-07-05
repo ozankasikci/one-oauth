@@ -63,7 +63,6 @@ func welcomeHandler(w http.ResponseWriter, req *http.Request) {
 
 // profileHandler shows protected user content.
 func profileHandler(w http.ResponseWriter, req *http.Request) {
-	println("its here")
 	if !isAuthenticated(req) {
 		fmt.Fprint(w, `You are not logged in :)`)
 		return
