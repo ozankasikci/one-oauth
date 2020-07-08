@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"github.com/ozankasikci/one-oauth/internal/proxy"
-	"github.com/ozankasikci/one-oauth/internal/proxy/google"
+	"github.com/ozankasikci/one-oauth/provider/google"
 	"io/ioutil"
 	"log"
 	"os"

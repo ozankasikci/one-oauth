@@ -4,18 +4,12 @@ import (
 	"github.com/dghubble/gologin/v2"
 	"github.com/dghubble/gologin/v2/google"
 	"github.com/dghubble/sessions"
+	"github.com/ozankasikci/one-oauth/provider"
 	"golang.org/x/oauth2"
 	googleOAuth2 "golang.org/x/oauth2/google"
 	"net/http"
 	"net/url"
 )
-
-type GoogleProviderInterface interface {
-	LoginHandler() http.Handler
-	LogoutHandler() http.Handler
-	CallbackHandler() http.Handler
-	IsAuthenticatedHandler() http.Handler
-}
 
 type Config struct {
 	CookieSessionName          string
@@ -51,7 +45,7 @@ func (t GoogleProvider) IsAuthenticatedHandler() http.Handler {
 	return t.IsAuthenticatedHandler()
 }
 
-func New(config *Config) GoogleProviderInterface {
+func New(config *Config) provider.ProviderInterface {
 	oauth2Config := &oauth2.Config{
 		ClientID:     config.ClientID,
 		ClientSecret: config.ClientSecret,

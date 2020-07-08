@@ -3,7 +3,9 @@ package proxy
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	googleprovider "github.com/ozankasikci/one-oauth/internal/proxy/google"
+	"github.com/ozankasikci/one-oauth/provider"
+	githubprovider "github.com/ozankasikci/one-oauth/provider/github"
+	googleprovider "github.com/ozankasikci/one-oauth/provider/google"
 	"log"
 	"net/http"
 )
@@ -12,12 +14,14 @@ type Config struct {
 	UpstreamSuccessRedirectURL string
 	Port                       string
 	GoogleConfig               *googleprovider.Config
+	GithubConfig               *githubprovider.Config
 }
 
 type Proxy struct {
 	Config         *Config
 	Router         *mux.Router
-	GoogleProvider googleprovider.GoogleProviderInterface
+	GoogleProvider provider.ProviderInterface
+	GithubProvider provider.ProviderInterface
 }
 
 func NewConfig(port string, options ...func(*Config)) *Config {
@@ -35,6 +39,12 @@ func NewConfig(port string, options ...func(*Config)) *Config {
 func AddGoogleConfig(config *googleprovider.Config) func(*Config) {
 	return func(c *Config) {
 		c.GoogleConfig = config
+	}
+}
+
+func AddGithubConfig(config *githubprovider.Config) func(*Config) {
+	return func(c *Config) {
+		c.GithubConfig = config
 	}
 }
 
