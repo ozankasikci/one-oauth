@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/dghubble/sessions"
 	"io/ioutil"
 	"log"
@@ -41,7 +40,6 @@ func New() *http.ServeMux {
 	mux.HandleFunc("/auth/google/login", func(w http.ResponseWriter, r *http.Request) { proxy.ServeHTTP(w, r) })
 	mux.HandleFunc("/auth/google/callback", func(w http.ResponseWriter, r *http.Request) { proxy.ServeHTTP(w, r) })
 	mux.HandleFunc("/auth/google/success/callback", func(w http.ResponseWriter, r *http.Request) {
-		spew.Dump(r.URL.Query())
 		println(r.URL.Query()["email"][0])
 		http.Redirect(w, r, "/profile", http.StatusFound)
 	})
@@ -49,7 +47,13 @@ func New() *http.ServeMux {
 	mux.HandleFunc("/auth/github/login", func(w http.ResponseWriter, r *http.Request) { proxy.ServeHTTP(w, r) })
 	mux.HandleFunc("/auth/github/callback", func(w http.ResponseWriter, r *http.Request) { proxy.ServeHTTP(w, r) })
 	mux.HandleFunc("/auth/github/success/callback", func(w http.ResponseWriter, r *http.Request) {
-		spew.Dump(r.URL.Query())
+		println(r.URL.Query()["email"][0])
+		http.Redirect(w, r, "/profile", http.StatusFound)
+	})
+
+	mux.HandleFunc("/auth/facebook/login", func(w http.ResponseWriter, r *http.Request) { proxy.ServeHTTP(w, r) })
+	mux.HandleFunc("/auth/facebook/callback", func(w http.ResponseWriter, r *http.Request) { proxy.ServeHTTP(w, r) })
+	mux.HandleFunc("/auth/facebook/success/callback", func(w http.ResponseWriter, r *http.Request) {
 		println(r.URL.Query()["email"][0])
 		http.Redirect(w, r, "/profile", http.StatusFound)
 	})

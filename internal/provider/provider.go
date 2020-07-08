@@ -8,4 +8,3 @@ type ProviderInterface interface {
 	CallbackHandler() http.Handler
 	IsAuthenticatedHandler() http.Handler
 }
-

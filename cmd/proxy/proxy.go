@@ -2,9 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	facebookprovider "github.com/ozankasikci/one-oauth/internal/provider/facebook"
+	githubprovider "github.com/ozankasikci/one-oauth/internal/provider/github"
+	"github.com/ozankasikci/one-oauth/internal/provider/google"
 	"github.com/ozankasikci/one-oauth/internal/proxy"
-	githubprovider "github.com/ozankasikci/one-oauth/provider/github"
-	"github.com/ozankasikci/one-oauth/provider/google"
 	"io/ioutil"
 	"log"
 	"os"
@@ -29,6 +30,10 @@ func main() {
 			ClientID     string `json:"client_id"`
 			ClientSecret string `json:"client_secret"`
 		} `json:"github"`
+		Facebook struct {
+			ClientID     string `json:"client_id"`
+			ClientSecret string `json:"client_secret"`
+		} `json:"facebook"`
 	}
 	err = json.Unmarshal(bytes, &res)
 	if err != nil {
@@ -53,10 +58,21 @@ func main() {
 			ClientSecret:               res.Github.ClientSecret,
 			GithubRedirectURL:          "http://localhost:5000/auth/github/callback",
 			UpstreamSuccessRedirectURL: "http://localhost:5000/auth/github/success/callback",
-			Scopes: []string{"user"},
+			Scopes:                     []string{"user"},
 			CookieSessionName:          "example-github-app",
 			CookieSessionSecret:        "example cookie signing secret",
 			CookieSessionUserKey:       "githubID",
+		}),
+
+		proxy.AddFacebookConfig(&facebookprovider.Config{
+			ClientID:                   res.Facebook.ClientID,
+			ClientSecret:               res.Facebook.ClientSecret,
+			FacebookRedirectURL:        "http://localhost:5000/auth/facebook/callback",
+			UpstreamSuccessRedirectURL: "http://localhost:5000/auth/facebook/success/callback",
+			Scopes:                     []string{"email"},
+			CookieSessionName:          "example-facebook-app",
+			CookieSessionSecret:        "example cookie signing secret",
+			CookieSessionUserKey:       "facebookID",
 		}),
 	)
 

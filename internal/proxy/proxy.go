@@ -3,9 +3,10 @@ package proxy
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/ozankasikci/one-oauth/provider"
-	githubprovider "github.com/ozankasikci/one-oauth/provider/github"
-	googleprovider "github.com/ozankasikci/one-oauth/provider/google"
+	"github.com/ozankasikci/one-oauth/internal/provider"
+	facebookprovider "github.com/ozankasikci/one-oauth/internal/provider/facebook"
+	githubprovider "github.com/ozankasikci/one-oauth/internal/provider/github"
+	googleprovider "github.com/ozankasikci/one-oauth/internal/provider/google"
 	"log"
 	"net/http"
 )
@@ -15,13 +16,15 @@ type Config struct {
 	Port                       string
 	GoogleConfig               *googleprovider.Config
 	GithubConfig               *githubprovider.Config
+	FacebookConfig             *facebookprovider.Config
 }
 
 type Proxy struct {
-	Config         *Config
-	Router         *mux.Router
-	GoogleProvider provider.ProviderInterface
-	GithubProvider provider.ProviderInterface
+	Config           *Config
+	Router           *mux.Router
+	GoogleProvider   provider.ProviderInterface
+	GithubProvider   provider.ProviderInterface
+	FacebookProvider provider.ProviderInterface
 }
 
 func NewConfig(port string, options ...func(*Config)) *Config {
@@ -48,6 +51,12 @@ func AddGithubConfig(config *githubprovider.Config) func(*Config) {
 	}
 }
 
+func AddFacebookConfig(config *facebookprovider.Config) func(*Config) {
+	return func(c *Config) {
+		c.FacebookConfig = config
+	}
+}
+
 func New(config *Config) *Proxy {
 	router := mux.NewRouter()
 	proxy := &Proxy{
@@ -69,6 +78,14 @@ func New(config *Config) *Proxy {
 		router.Handle("/auth/github/logout", githubProvider.LogoutHandler())
 		router.Handle("/auth/github/callback", githubProvider.CallbackHandler())
 		proxy.GithubProvider = githubProvider
+	}
+
+	if config.FacebookConfig != nil {
+		facebookProvider := facebookprovider.New(config.FacebookConfig)
+		router.Handle("/auth/facebook/login", facebookProvider.LoginHandler())
+		router.Handle("/auth/facebook/logout", facebookProvider.LogoutHandler())
+		router.Handle("/auth/facebook/callback", facebookProvider.CallbackHandler())
+		proxy.FacebookProvider = facebookProvider
 	}
 
 	return proxy

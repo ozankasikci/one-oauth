@@ -1,4 +1,0 @@
-{
-  "google":{"client_id":"865902519436-kia9b4p6a9vejck7ep656hheo4pdjlpd.apps.googleusercontent.com","project_id":"wyfproject","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_secret":"Pv2uMlLwGAMgpnwEPN_tYWQs","redirect_uris":["http://localhost:5000/auth/google/callback"],"javascript_origins":["http://localhost:5000"]},
-  "github": {"client_id":  "f0fd1973f3ee62d5c5c8", "client_secret": "e73e0511a342190d34d8dac4c2e93fa07e51586c"}
-}

@@ -4,7 +4,7 @@ import (
 	"github.com/dghubble/gologin/v2"
 	"github.com/dghubble/gologin/v2/github"
 	"github.com/dghubble/sessions"
-	"github.com/ozankasikci/one-oauth/provider"
+	"github.com/ozankasikci/one-oauth/internal/provider"
 	"golang.org/x/oauth2"
 	githubOAuth2 "golang.org/x/oauth2/github"
 	"net/http"
@@ -78,7 +78,6 @@ func (t *GithubProvider) issueSession() http.Handler {
 			return
 		}
 
-
 		cookie := t.CookieStore.New(t.Config.CookieSessionName)
 		cookie.Values[t.Config.CookieSessionUserKey] = githubUser.ID
 		err = cookie.Save(w)
@@ -98,6 +97,10 @@ func (t *GithubProvider) issueSession() http.Handler {
 		q.Set("name", githubUser.GetName())
 		q.Set("id", strconv.FormatInt(githubUser.GetID(), 10))
 		q.Set("picture", githubUser.GetAvatarURL())
+		q.Set("company", githubUser.GetCompany())
+		q.Set("location", githubUser.GetLocation())
+		q.Set("bio", githubUser.GetBio())
+		q.Set("bio", githubUser.GetURL())
 		successRedirectUrl.RawQuery = q.Encode()
 
 		http.Redirect(w, r, successRedirectUrl.String(), http.StatusFound)
