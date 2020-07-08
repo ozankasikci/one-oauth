@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/dghubble/sessions"
 	"io/ioutil"
 	"log"
@@ -23,7 +24,7 @@ var sessionStore = sessions.NewCookieStore([]byte(sessionSecret), nil)
 func New() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", welcomeHandler)
-	mux.Handle("/profile", requireLogin(http.HandlerFunc(profileHandler)))
+	mux.Handle("/profile", http.HandlerFunc(profileHandler))
 	mux.HandleFunc("/logout", logoutHandler)
 
 	app, _ := url.Parse("http://localhost:5000/")
@@ -40,10 +41,19 @@ func New() *http.ServeMux {
 	mux.HandleFunc("/auth/google/login", func(w http.ResponseWriter, r *http.Request) { proxy.ServeHTTP(w, r) })
 	mux.HandleFunc("/auth/google/callback", func(w http.ResponseWriter, r *http.Request) { proxy.ServeHTTP(w, r) })
 	mux.HandleFunc("/auth/google/success/callback", func(w http.ResponseWriter, r *http.Request) {
+		spew.Dump(r.URL.Query())
 		println(r.URL.Query()["email"][0])
-
 		http.Redirect(w, r, "/profile", http.StatusFound)
 	})
+
+	mux.HandleFunc("/auth/github/login", func(w http.ResponseWriter, r *http.Request) { proxy.ServeHTTP(w, r) })
+	mux.HandleFunc("/auth/github/callback", func(w http.ResponseWriter, r *http.Request) { proxy.ServeHTTP(w, r) })
+	mux.HandleFunc("/auth/github/success/callback", func(w http.ResponseWriter, r *http.Request) {
+		spew.Dump(r.URL.Query())
+		println(r.URL.Query()["email"][0])
+		http.Redirect(w, r, "/profile", http.StatusFound)
+	})
+
 	return mux
 }
 
@@ -76,18 +86,6 @@ func logoutHandler(w http.ResponseWriter, req *http.Request) {
 		sessionStore.Destroy(w, sessionName)
 	}
 	http.Redirect(w, req, "/", http.StatusFound)
-}
-
-// requireLogin redirects unauthenticated users to the login route.
-func requireLogin(next http.Handler) http.Handler {
-	fn := func(w http.ResponseWriter, req *http.Request) {
-		if !isAuthenticated(req) {
-			http.Redirect(w, req, "/", http.StatusFound)
-			return
-		}
-		next.ServeHTTP(w, req)
-	}
-	return http.HandlerFunc(fn)
 }
 
 // isAuthenticated returns true if the user has a signed session cookie.

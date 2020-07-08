@@ -63,6 +63,14 @@ func New(config *Config) *Proxy {
 		proxy.GoogleProvider = googleProvider
 	}
 
+	if config.GithubConfig != nil {
+		githubProvider := githubprovider.New(config.GithubConfig)
+		router.Handle("/auth/github/login", githubProvider.LoginHandler())
+		router.Handle("/auth/github/logout", githubProvider.LogoutHandler())
+		router.Handle("/auth/github/callback", githubProvider.CallbackHandler())
+		proxy.GithubProvider = githubProvider
+	}
+
 	return proxy
 }
 
